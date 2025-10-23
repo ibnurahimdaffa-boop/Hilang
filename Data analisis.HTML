@@ -1,0 +1,496 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hilang</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Courier New', monospace;
+        }
+        
+        body {
+            background-color: black;
+            color: #00ff00;
+            overflow: hidden;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            transition: background-color 5s ease;
+        }
+        
+        .container {
+            text-align: center;
+            z-index: 10;
+            padding: 20px;
+            border: 1px solid #00ff00;
+            background-color: rgba(0, 0, 0, 0.7);
+            border-radius: 5px;
+            box-shadow: 0 0 15px rgba(0, 255, 0, 0.5);
+            max-width: 600px;
+            width: 90%;
+        }
+        
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+            text-shadow: 0 0 10px #00ff00;
+            letter-spacing: 3px;
+        }
+        
+        .buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin-top: 30px;
+        }
+        
+        button {
+            background-color: transparent;
+            color: #00ff00;
+            border: 1px solid #00ff00;
+            padding: 12px 20px;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            border-radius: 3px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        button:hover {
+            background-color: #00ff00;
+            color: black;
+            box-shadow: 0 0 15px #00ff00;
+        }
+        
+        button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        button:disabled:hover {
+            background-color: transparent;
+            color: #00ff00;
+            box-shadow: none;
+        }
+        
+        .coming-soon {
+            color: yellow;
+            background-color: rgba(0, 0, 0, 0.7);
+            padding: 10px;
+            margin-top: 10px;
+            border: 1px solid yellow;
+            border-radius: 3px;
+        }
+        
+        .matrix-char {
+            position: absolute;
+            font-size: 14px;
+            font-weight: bold;
+            z-index: 1;
+            opacity: 0.8;
+        }
+        
+        .bug-wa-container, .data-analysis-container {
+            display: none;
+            margin-top: 20px;
+            width: 100%;
+        }
+        
+        textarea, input {
+            width: 100%;
+            background-color: black;
+            color: #00ff00;
+            border: 1px solid #00ff00;
+            padding: 10px;
+            margin-bottom: 15px;
+            border-radius: 3px;
+        }
+        
+        textarea {
+            height: 150px;
+            resize: none;
+        }
+        
+        input {
+            height: 40px;
+        }
+        
+        .progress-container {
+            width: 100%;
+            height: 30px;
+            background-color: black;
+            border: 1px solid #00ff00;
+            border-radius: 3px;
+            margin: 20px 0;
+            overflow: hidden;
+            display: none;
+            position: relative;
+        }
+        
+        .progress-bar {
+            height: 100%;
+            width: 0%;
+            background-color: #00ff00;
+            transition: width 0.1s linear;
+        }
+        
+        .progress-text {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: #00ff00;
+            font-weight: bold;
+        }
+        
+        .hacked-message, .analysis-result {
+            display: none;
+            margin-top: 20px;
+            font-size: 1.2rem;
+            line-height: 1.5;
+        }
+        
+        .falling-text {
+            position: absolute;
+            font-size: 18px;
+            font-weight: bold;
+            z-index: 5;
+            text-shadow: 0 0 5px currentColor;
+        }
+        
+        .data-display {
+            background-color: rgba(0, 0, 0, 0.8);
+            border: 1px solid #00ff00;
+            padding: 15px;
+            margin-top: 20px;
+            border-radius: 3px;
+            text-align: left;
+        }
+        
+        .data-item {
+            margin-bottom: 10px;
+            padding-bottom: 10px;
+            border-bottom: 1px dashed #00ff00;
+        }
+        
+        .data-item:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+            padding-bottom: 0;
+        }
+        
+        .digit-info {
+            margin-top: 10px;
+            font-size: 0.9rem;
+            color: #0080ff;
+        }
+        
+        .digit-count {
+            text-align: right;
+            font-size: 0.8rem;
+            color: #00ff00;
+            margin-top: 5px;
+        }
+        
+        .valid {
+            color: #00ff00;
+        }
+        
+        .invalid {
+            color: #ff0000;
+        }
+        
+        .secret {
+            color: #ff0000;
+            font-style: italic;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Hilang</h1>
+        
+        <div class="buttons">
+            <button id="bug-wa-btn">Bug Wa</button>
+            <div class="coming-soon">Coming Soon</div>
+            
+            <button id="data-analysis-btn">Data Analisis</button>
+            <div class="coming-soon">Coming Soon</div>
+            
+            <button id="feature3-btn">Feature 3</button>
+            <div class="coming-soon">Coming Soon</div>
+        </div>
+        
+        <div id="bug-wa-container" class="bug-wa-container">
+            <textarea id="bug-input" placeholder="Ketik sesuatu di sini..."></textarea>
+            <button id="bug-submit">Bug wa Segera (Cooldown 60 detik)</button>
+            
+            <div id="progress-container" class="progress-container">
+                <div id="progress-bar" class="progress-bar"></div>
+                <div id="progress-text" class="progress-text">0%</div>
+            </div>
+            
+            <div id="hacked-message" class="hacked-message"></div>
+        </div>
+        
+        <div id="data-analysis-container" class="data-analysis-container">
+            <input type="text" id="phone-input" placeholder="Masukkan Nomor WA (5-13 digit)" maxlength="13">
+            <div class="digit-count">
+                <span id="digit-count">0</span>/13 digit
+            </div>
+            <div class="digit-info">* Masukkan 5-13 digit angka</div>
+            <button id="analyze-btn" disabled>Data Analisis</button>
+            
+            <div id="analysis-progress-container" class="progress-container">
+                <div id="analysis-progress-bar" class="progress-bar"></div>
+                <div id="analysis-progress-text" class="progress-text">0%</div>
+            </div>
+            
+            <div id="analysis-result" class="analysis-result">
+                <div class="data-display">
+                    <div class="data-item">
+                        <strong>Nama:</strong> Ismail Moh. Thalib
+                    </div>
+                    <div class="data-item">
+                        <strong>Nomor WA:</strong> <span id="result-phone">81240244115</span>
+                    </div>
+                    <div class="data-item">
+                        <strong>Umur:</strong> 12
+                    </div>
+                    <div class="data-item">
+                        <strong>Lahir:</strong> Tanggal 10 Bulan ke 4 Tahun 2013
+                    </div>
+                    <div class="data-item">
+                        <strong>Tinggal:</strong> Jl.Remaja desa .....
+                    </div>
+                    <div class="data-item">
+                        <strong>Nama orang tua:</strong> <span class="secret">R___ (Rahasia)</span>
+                    </div>
+                </div>
+                <button id="back-to-lobby-analysis" style="margin-top: 20px;">Kembali ke Lobby</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Background color changer
+        const colors = ['black', '#1a001a', '#330033', '#4d004d', '#660066'];
+        let colorIndex = 0;
+        
+        function changeBackground() {
+            document.body.style.backgroundColor = colors[colorIndex];
+            colorIndex = (colorIndex + 1) % colors.length;
+        }
+        
+        setInterval(changeBackground, 5000);
+        
+        // Matrix rain effect
+        const chars = '01';
+        const colorsMatrix = ['#00ff00', '#0080ff', '#ff0000'];
+        
+        function createMatrixChar() {
+            const char = document.createElement('div');
+            char.className = 'matrix-char';
+            char.textContent = chars.charAt(Math.floor(Math.random() * chars.length));
+            char.style.color = colorsMatrix[Math.floor(Math.random() * colorsMatrix.length)];
+            char.style.left = Math.random() * 100 + 'vw';
+            char.style.top = '-20px';
+            char.style.fontSize = (Math.random() * 10 + 10) + 'px';
+            
+            document.body.appendChild(char);
+            
+            const duration = Math.random() * 3 + 2;
+            char.style.transition = `top ${duration}s linear`;
+            
+            setTimeout(() => {
+                char.style.top = '100vh';
+            }, 10);
+            
+            setTimeout(() => {
+                document.body.removeChild(char);
+            }, duration * 1000);
+        }
+        
+        setInterval(createMatrixChar, 50);
+        
+        // Button functionality
+        document.getElementById('bug-wa-btn').addEventListener('click', function() {
+            document.querySelector('.buttons').style.display = 'none';
+            document.getElementById('bug-wa-container').style.display = 'block';
+        });
+        
+        document.getElementById('data-analysis-btn').addEventListener('click', function() {
+            document.querySelector('.buttons').style.display = 'none';
+            document.getElementById('data-analysis-container').style.display = 'block';
+        });
+        
+        document.getElementById('feature3-btn').addEventListener('click', function() {
+            alert('Fitur ini masih dalam pengembangan!');
+        });
+        
+        // Phone number validation for data analysis
+        const phoneInput = document.getElementById('phone-input');
+        const analyzeBtn = document.getElementById('analyze-btn');
+        const digitCount = document.getElementById('digit-count');
+        
+        phoneInput.addEventListener('input', function() {
+            const value = phoneInput.value;
+            // Only allow digits
+            phoneInput.value = value.replace(/\D/g, '');
+            
+            // Update digit count
+            const currentLength = phoneInput.value.length;
+            digitCount.textContent = currentLength;
+            
+            // Change color based on validity
+            if (currentLength >= 5 && currentLength <= 13) {
+                digitCount.className = 'valid';
+            } else {
+                digitCount.className = 'invalid';
+            }
+            
+            // Enable button if input length is between 5 and 13
+            if (phoneInput.value.length >= 5 && phoneInput.value.length <= 13) {
+                analyzeBtn.disabled = false;
+            } else {
+                analyzeBtn.disabled = true;
+            }
+        });
+        
+        // Bug WA functionality
+        document.getElementById('bug-submit').addEventListener('click', function() {
+            const progressContainer = document.getElementById('progress-container');
+            const progressBar = document.getElementById('progress-bar');
+            const progressText = document.getElementById('progress-text');
+            const bugSubmitBtn = document.getElementById('bug-submit');
+            
+            // Disable button and show progress bar
+            bugSubmitBtn.disabled = true;
+            progressContainer.style.display = 'block';
+            
+            // Start progress bar animation
+            let width = 0;
+            const interval = setInterval(() => {
+                if (width >= 100) {
+                    clearInterval(interval);
+                    showHackedMessage();
+                } else {
+                    width += 100 / 600; // 600 intervals in 60 seconds
+                    progressBar.style.width = width + '%';
+                    progressText.textContent = Math.round(width) + '%';
+                }
+            }, 100);
+        });
+        
+        // Data Analysis functionality
+        document.getElementById('analyze-btn').addEventListener('click', function() {
+            const progressContainer = document.getElementById('analysis-progress-container');
+            const progressBar = document.getElementById('analysis-progress-bar');
+            const progressText = document.getElementById('analysis-progress-text');
+            const analyzeBtn = document.getElementById('analyze-btn');
+            
+            // Update the phone number in result
+            document.getElementById('result-phone').textContent = phoneInput.value;
+            
+            // Disable button and show progress bar
+            analyzeBtn.disabled = true;
+            phoneInput.disabled = true;
+            progressContainer.style.display = 'block';
+            
+            // Start progress bar animation (10 seconds)
+            let width = 0;
+            const interval = setInterval(() => {
+                if (width >= 100) {
+                    clearInterval(interval);
+                    showAnalysisResult();
+                } else {
+                    width += 100 / 100; // 100 intervals in 10 seconds
+                    progressBar.style.width = width + '%';
+                    progressText.textContent = Math.round(width) + '%';
+                }
+            }, 100);
+        });
+        
+        function showHackedMessage() {
+            const hackedMessage = document.getElementById('hacked-message');
+            hackedMessage.innerHTML = '';
+            hackedMessage.style.display = 'block';
+            
+            const text = "WA HAMPIR DIBOBOL SILAHKAN TUNGGU 1-3 HARI";
+            const words = text.split(' ');
+            
+            words.forEach((word, index) => {
+                setTimeout(() => {
+                    const wordElement = document.createElement('div');
+                    wordElement.textContent = word;
+                    wordElement.style.color = index % 2 === 0 ? '#00ff00' : '#ff0000';
+                    wordElement.className = 'falling-text';
+                    wordElement.style.left = (Math.random() * 70 + 15) + 'vw';
+                    wordElement.style.top = '-50px';
+                    
+                    hackedMessage.appendChild(wordElement);
+                    
+                    // Animate falling
+                    setTimeout(() => {
+                        wordElement.style.transition = 'top 2s ease-in';
+                        wordElement.style.top = '80vh';
+                    }, 10);
+                    
+                    // Add back to lobby button after all words
+                    if (index === words.length - 1) {
+                        setTimeout(() => {
+                            const backButton = document.createElement('button');
+                            backButton.textContent = 'Kembali ke Lobby';
+                            backButton.style.marginTop = '20px';
+                            backButton.addEventListener('click', backToLobby);
+                            hackedMessage.appendChild(backButton);
+                        }, 2500);
+                    }
+                }, index * 300);
+            });
+        }
+        
+        function showAnalysisResult() {
+            const analysisResult = document.getElementById('analysis-result');
+            analysisResult.style.display = 'block';
+        }
+        
+        function backToLobby() {
+            // Reset everything
+            document.getElementById('bug-wa-container').style.display = 'none';
+            document.getElementById('data-analysis-container').style.display = 'none';
+            document.querySelector('.buttons').style.display = 'flex';
+            
+            // Reset bug WA
+            document.getElementById('progress-container').style.display = 'none';
+            document.getElementById('progress-bar').style.width = '0%';
+            document.getElementById('progress-text').textContent = '0%';
+            document.getElementById('hacked-message').style.display = 'none';
+            document.getElementById('hacked-message').innerHTML = '';
+            document.getElementById('bug-submit').disabled = false;
+            document.getElementById('bug-input').value = '';
+            
+            // Reset data analysis
+            document.getElementById('analysis-progress-container').style.display = 'none';
+            document.getElementById('analysis-progress-bar').style.width = '0%';
+            document.getElementById('analysis-progress-text').textContent = '0%';
+            document.getElementById('analysis-result').style.display = 'none';
+            document.getElementById('analyze-btn').disabled = true;
+            document.getElementById('phone-input').value = '';
+            document.getElementById('phone-input').disabled = false;
+            document.getElementById('digit-count').textContent = '0';
+            document.getElementById('digit-count').className = '';
+        }
+        
+        // Back to lobby button for data analysis
+        document.getElementById('back-to-lobby-analysis').addEventListener('click', backToLobby);
+    </script>
+</body>
+</html>
